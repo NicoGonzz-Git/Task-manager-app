@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fluentui/react": "^8.122.15",
     "@fluentui/react-components": "^9.63.0",
+    "@fluentui/react-icons": "^2.0.297",
     "@testing-library/dom": "^8.19.1",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",
