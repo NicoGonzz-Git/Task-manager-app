@@ -1,95 +1,73 @@
 import React, { useState } from 'react';
-import { CommandBar } from '@fluentui/react';
-import { makeStyles } from '@fluentui/react-components';
+import { makeStyles, shorthands, tokens, Button, Toolbar, ToolbarButton } from '@fluentui/react-components';
+import { CalendarMonthRegular, TaskListLtrRegular, WeatherMoonRegular, WeatherSunnyRegular } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '0 20px',
-    backgroundColor: '#0078d4',
-    color: '#ffffff',
-    height: 48,
-    transition: 'background-color 0.3s',
+    paddingLeft: tokens.spacingHorizontalM,
+    paddingRight: tokens.spacingHorizontalM,
+    backgroundColor: tokens.colorBrandBackground,
+    color: tokens.colorNeutralForegroundOnBrand,
+    height: '48px',
+    ...shorthands.transition('background-color', '0.3s'),
+  },
+  darkModeHeader: {
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: tokens.colorNeutralForeground1,
   },
   nav: {
     display: 'flex',
     alignItems: 'center',
-  },
-  navLink: {
-    color: '#ffffff',
-    marginLeft: 20,
-    textDecoration: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
+    '@media (max-width: 768px)': {
+      display: 'none',
     },
   },
   darkModeButton: {
-    cursor: 'pointer',
-    color: '#ffffff',
-    border: 'none',
-    backgroundColor: 'transparent',
-    fontSize: '16px',
-    marginLeft: '20px',
-  },
-  darkModeHeader: {
-    backgroundColor: '#333333',
-    color: '#ffffff',
+    marginLeft: tokens.spacingHorizontalM,
   },
   mobileMenu: {
     display: 'none',
-  },
-  '@media (max-width: 768px)': {
-    nav: {
-      display: 'none',
-    },
-    mobileMenu: {
+    '@media (max-width: 768px)': {
       display: 'block',
     },
   },
 });
 
-/*
- ** Header component with dark mode
- */
 const Header = () => {
   const classes = useStyles();
   const [darkMode, setDarkMode] = useState(false);
-
-  const menuItems = [
-    {
-      key: 'tasks',
-      text: 'Tasks',
-      onClick: () => console.log("Tasks"),
-    },
-    {
-      key: 'calendar',
-      text: 'Calendar',
-      onClick: () => console.log("Calendar"),
-    }
-  ];
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
   return (
-    <header
-      className={`${classes.header} ${darkMode ? classes.darkModeHeader : ''}`}
-    >
-      <div>
-        Task Manager 
-      </div>
-      <CommandBar items={menuItems} className={classes.nav} />
-      <button
+    <header className={`${classes.header} ${darkMode ? classes.darkModeHeader : ''}`}>
+      <div>Task Manager</div>
+
+      <Toolbar className={classes.nav} aria-label="Navigation">
+        <ToolbarButton icon={<TaskListLtrRegular />} onClick={() => console.log('Tasks')}>
+          Tasks
+        </ToolbarButton>
+        <ToolbarButton icon={<CalendarMonthRegular />} onClick={() => console.log('Calendar')}>
+          Calendar
+        </ToolbarButton>
+      </Toolbar>
+
+      <Button 
+        appearance="subtle" 
+        icon={darkMode ? <WeatherSunnyRegular /> : <WeatherMoonRegular />} 
+        onClick={toggleDarkMode} 
         className={classes.darkModeButton}
-        onClick={toggleDarkMode}
       >
         {darkMode ? 'Light Mode' : 'Dark Mode'}
-      </button>
+      </Button>
+
       <div className={classes.mobileMenu}>
-        <button>Menu</button>
+        <Button appearance="subtle">Menu</Button>
       </div>
     </header>
   );

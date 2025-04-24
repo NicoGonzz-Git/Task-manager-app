@@ -1,17 +1,25 @@
 import './App.css';
 import Header from './components/common/header/Header';
 import Footer from './components/common/footer/Footer';
+import Calendar from './components/calendar/Calendar';
+import FluentDemo from './components/fluent/fluent';
 
 function App() {
   return (
-    <div className="App">
-
-      <header className='App-header'>
-       <Header />
+    <div className="">
+      <header className="App-header">
+        <Header />
       </header>
 
-       <Footer/>
-       
+      <main className="">
+        <Calendar />
+      </main>
+      
+      <FluentDemo/>
+
+      <footer className="">
+        <Footer />
+      </footer>
     </div>
   );
 }
