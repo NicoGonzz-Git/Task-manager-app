@@ -2,7 +2,7 @@ import './App.css';
 import Header from './components/common/header/Header';
 import Footer from './components/common/footer/Footer';
 import Calendar from './components/calendar/Calendar';
-import FluentDemo from './components/fluent/fluent';
+import UserList from './components/users/users';
 
 function App() {
   return (
@@ -15,8 +15,8 @@ function App() {
         <Calendar />
       </main>
       
-      <FluentDemo/>
-
+        <UserList />
+        
       <footer className="">
         <Footer />
       </footer>
