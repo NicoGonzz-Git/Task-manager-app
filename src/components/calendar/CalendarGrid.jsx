@@ -36,7 +36,14 @@ const CalendarGrid = ({ currentMonth, highlightedDate }) => {
         date.getDate() === 24 && date.getMonth() === 3 && date.getFullYear() === 2025;
 
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.25rem' }}>
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(7, 1fr)',
+                gap: '0.25rem',
+                padding: '0.5rem'
+            }}
+        >
             {getDaysInMonth(currentMonth).map((date, index) => (
                 <DayCell
                     key={index}
