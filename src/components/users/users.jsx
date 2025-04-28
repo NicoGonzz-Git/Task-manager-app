@@ -42,7 +42,7 @@ const UserList = () => {
   if (loading) {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
-        <Spinner label="Cargando usuarios..." />
+        <Spinner label="Loading users..." />
       </div>
     );
   }

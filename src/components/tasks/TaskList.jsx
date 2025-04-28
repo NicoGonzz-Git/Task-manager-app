@@ -1,97 +1,134 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectTasks, deleteTask } from '../../redux/slices/taskSlice';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
+  Text,
   Card,
   CardHeader,
-  Text,
-  Button,
-  Dialog,
-  DialogSurface,
-  DialogBody,
-  DialogTitle,
-  DialogContent,
+  CardFooter,
+  makeStyles,
+  tokens
 } from '@fluentui/react-components';
-import TaskForm from './TaskForm';
+import { selectAllTasks } from '../../redux/slices/taskSlice';
+import { getUsers } from '../../services/getUsers';
+
+const useStyles = makeStyles({
+  taskList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+    padding: '1rem',
+    backgroundColor: 'white',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    borderRadius: '0.75rem',
+  },
+  taskCard: {
+    transition: 'transform 0.1s ease-in-out',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+    }
+  },
+  cardHeader: {
+    padding: '0.5rem',
+  },
+  taskContent: {
+    padding: '0.75rem',
+  },
+  cardFooter: {
+    padding: '0.5rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  noTasks: {
+    textAlign: 'center',
+    padding: '2rem',
+    color: tokens.colorNeutralForeground2,
+  },
+  assignedUser: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.25rem',
+  },
+  userAvatar: {
+    width: '1.5rem',
+    height: '1.5rem',
+    borderRadius: '50%',
+    backgroundColor: tokens.colorBrandBackground,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '0.75rem',
+  }
+});
 
 const TaskList = () => {
-  const tasks = useSelector(selectTasks);
-  const dispatch = useDispatch();
-  const [editTask, setEditTask] = React.useState(null);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const styles = useStyles();
+  const tasks = useSelector(selectAllTasks);
+  const [users, setUsers] = useState({});
 
-  const handleDelete = (id) => {
-    dispatch(deleteTask(id));
-  };
+  useEffect(() => {
+    getUsers()
+      .then(res => {
+        const userMap = {};
+        res.data.forEach(user => {
+          userMap[user.id] = user;
+        });
+        setUsers(userMap);
+      })
+      .catch(err => console.error('Error loading users:', err))
+  }, []);
 
-  const handleEdit = (task) => {
-    setEditTask(task);
-    setIsDialogOpen(true);
-  };
+  if (tasks.length === 0) {
+    return (
+      <div className={styles.taskList}>
+        <Text className={styles.noTasks}>No tasks scheduled</Text>
+      </div>
+    );
+  }
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
+  const getUserInitials = (name) => {
+    if (!name) return '?';
+    return name.split(' ').map(part => part[0]).join('').toUpperCase();
+  };
+
   return (
-    <div style={{ marginTop: '2rem' }}>
-      <Text size={600} weight="semibold" style={{ marginBottom: '1rem' }}>
-        List of tasks
-      </Text>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {tasks.map((task) => (
-          <Card key={task.id}>
-            <CardHeader
-              header={<Text weight="semibold" size={400}>{task.title}</Text>}
-              description={formatDate(task.date)}
-              action={
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <Button appearance="subtle" onClick={() => handleEdit(task)}>Update</Button>
-                  <Button appearance="subtle" onClick={() => handleDelete(task.id)}>Delete</Button>
+    <div className={styles.taskList}>
+      <Text as="h2" weight="semibold" size={6}>Upcoming Tasks</Text>
+      {tasks.map(task => (
+        <Card key={task.id} className={styles.taskCard}>
+          <CardHeader
+            className={styles.cardHeader}
+            style={{ backgroundColor: task.color }}
+            header={<Text weight="semibold" style={{ color: 'white' }}>{task.title}</Text>}
+          />
+          <div className={styles.taskContent}>
+            Task Description: <Text>{task.description}</Text>
+          </div>
+          <CardFooter className={styles.cardFooter}>
+            <Text>{formatDate(task.date)}</Text>
+            {task.userId && users[task.userId] && (
+              <div className={styles.assignedUser}>
+                <div className={styles.userAvatar}>
+                  {getUserInitials(users[task.userId].name)}
                 </div>
-              }
-            />
-            <div style={{ padding: '0.5rem 1rem 1rem' }}>
-              <Text>{task.description}</Text>
-              <div
-                style={{
-                  height: '0.5rem',
-                  width: '3rem',
-                  backgroundColor: task.color,
-                  borderRadius: '0.25rem',
-                  marginTop: '0.5rem',
-                }}
-              />
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {tasks.length === 0 && (
-        <Text align="center" style={{ marginTop: '1rem' }}>
-          There are no tasks
-        </Text>
-      )}
-
-      <Dialog open={isDialogOpen} onOpenChange={(_, data) => setIsDialogOpen(data.open)}>
-        <DialogSurface>
-          <DialogBody>
-            <DialogTitle>Update task</DialogTitle>
-            <DialogContent>
-              <TaskForm
-                initialTask={editTask}
-                onClose={() => setIsDialogOpen(false)}
-              />
-            </DialogContent>
-          </DialogBody>
-        </DialogSurface>
-      </Dialog>
+                <Text size={1}>{users[task.userId].name}</Text>
+              </div>
+            )}
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 };

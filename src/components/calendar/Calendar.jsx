@@ -18,7 +18,7 @@ import { store } from '../../redux/slices/store';
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 3, 1));
-  const [highlightedDate] = useState(new Date(2025, 3, 24));
+  const [highlightedDate] = useState(new Date(2025, 3, 28));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const prevMonth = () => {
@@ -64,12 +64,6 @@ const Calendar = () => {
 
           <WeekdayHeader />
           <CalendarGrid currentMonth={currentMonth} highlightedDate={highlightedDate} />
-
-          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
-            <Button appearance="primary" onClick={() => setIsDialogOpen(true)}>
-              Add new Task
-            </Button>
-          </div>
 
           <Dialog open={isDialogOpen} onOpenChange={(_, data) => setIsDialogOpen(data.open)}>
             <DialogSurface>

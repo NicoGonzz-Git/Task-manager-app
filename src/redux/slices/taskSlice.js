@@ -1,20 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, nanoid } from '@reduxjs/toolkit';
 
 const initialState = {
   tasks: [
     {
-      id: '1',
-      title: 'Work Meeting',
-      date: new Date(2025, 3, 24),
+      id: nanoid(),
+      title: 'Meeting with Team',
+      description: 'Discuss project progress',
+      date: new Date(2025, 3, 29),
       color: 'red',
-      description: 'Develop meeting '
+      userId: '3'
     },
     {
-      id: '2',
-      title: 'Proyect delivery',
-      date: new Date(2025, 3, 15),
-      color: 'blue',
-      description: 'Deadline for the proyect'
+      id: nanoid(),
+      title: 'Submit Report',
+      description: 'Deadline for financial report',
+      date: new Date(2025, 3, 29),
+      color: 'green',
+      userId: '5'
+    },
+    {
+      id: nanoid(),
+      title: 'Auth login',
+      description: 'Structure the auth for the login page',
+      date: new Date(2025, 2, 28),
+      color: 'purple',
+      userId: '8'
     }
   ]
 };
@@ -23,11 +33,22 @@ export const taskSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    addTask: (state, action) => {
-      state.tasks.push({
-        id: Date.now().toString(),
-        ...action.payload
-      });
+    addTask: {
+      reducer: (state, action) => {
+        state.tasks.push(action.payload);
+      },
+      prepare: (task) => {
+        return {
+          payload: {
+            id: nanoid(),
+            title: task.title,
+            description: task.description || '',
+            date: task.date || new Date(),
+            color: task.color || 'blue',
+            userId: task.userId || '' 
+          }
+        };
+      }
     },
     updateTask: (state, action) => {
       const index = state.tasks.findIndex(task => task.id === action.payload.id);
@@ -41,16 +62,25 @@ export const taskSlice = createSlice({
   }
 });
 
-export const { addTask, updateTask, deleteTask } = taskSlice.actions;
-
-export const selectTasks = state => state.tasks.tasks;
+export const selectAllTasks = (state) => state.tasks.tasks;
 
 export const selectTasksByDate = (state, date) => {
-  return state.tasks.tasks.filter(task => 
-    task.date.getDate() === date.getDate() &&
-    task.date.getMonth() === date.getMonth() &&
-    task.date.getFullYear() === date.getFullYear()
-  );
+  if (!date) return [];
+  const targetDate = new Date(date);
+  const year = targetDate.getFullYear();
+  const month = targetDate.getMonth();
+  const day = targetDate.getDate();
+  
+  return state.tasks.tasks.filter(task => {
+    const taskDate = new Date(task.date);
+    return (
+      taskDate.getFullYear() === year &&
+      taskDate.getMonth() === month &&
+      taskDate.getDate() === day
+    );
+  });
 };
+
+export const { addTask, updateTask, deleteTask } = taskSlice.actions;
 
 export default taskSlice.reducer;

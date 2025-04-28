@@ -50,17 +50,16 @@ const useStyles = makeStyles({
     marginBottom: tokens.spacingVerticalS,
   },
   taskMarkers: {
-    position: 'absolute',
-    bottom: tokens.spacingVerticalXS,
-    left: 0,
-    right: 0,
     display: 'flex',
     justifyContent: 'center',
     gap: tokens.spacingHorizontalXXS,
+    marginTop: 'auto',
+    marginBottom: 'auto',
+    padding: tokens.spacingVerticalS,
   },
   taskMarker: {
-    height: '0.5rem',
-    width: '0.5rem',
+    height: '0.75rem', 
+    width: '0.75rem',
     borderRadius: tokens.borderRadiusCircular,
   },
   taskCounter: {
@@ -92,6 +91,10 @@ const DayCell = ({ date, currentMonth, isHighlighted, hasMarkers }) => {
     isCurrentMonth ? styles.currentMonth : styles.otherMonth,
     isHighlighted && styles.highlighted
   );
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
 
   return (
     <div className={cellClass} onClick={() => setIsDialogOpen(true)}>
@@ -138,7 +141,7 @@ const DayCell = ({ date, currentMonth, isHighlighted, hasMarkers }) => {
                   ))}
                 </div>
               )}
-              <TaskForm selectedDate={date} onClose={() => setIsDialogOpen(false)} />
+              <TaskForm selectedDate={date} onClose={handleDialogClose} />
             </DialogContent>
           </DialogBody>
         </DialogSurface>
