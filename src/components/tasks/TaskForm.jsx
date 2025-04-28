@@ -28,7 +28,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
   const [showColorTooltip, setShowColorTooltip] = useState(false);
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  
+  const [titleError, setTitleError] = useState('');
+  const [dateError, setDateError] = useState('');
+
   const colorRef = useRef(null);
   
   const colorOptions = [
@@ -52,18 +54,39 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
       .finally(() => setLoadingUsers(false));
   }, []);
   
+  const validateTitle = (title) => {
+    if (!title) return 'Task title is required';
+    if (title.length < 4) return 'Task title must be at least 4 characters long';
+    if (/[^a-zA-Z0-9 ]/.test(title)) return 'Task title cannot contain special characters';
+    return '';
+  };
+
+  const validateDate = (date) =>{
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if(date < today){
+      return 'Date must be today or later'
+    }
+    return '';
+  }
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage('');
     setSuccessMessage('');
-    
-    if (!task.title.trim()) {
-      setErrorMessage('Title is required');
+  
+    const title = task.title.trim();
+    const validationError = validateTitle(title);
+    const dateValidationError = validateDate(task.date);
+
+    if (validationError || dateValidationError) {
+      setErrorMessage(validationError);
+      if(dateValidationError) setDateError(dateValidationError);
       setIsSubmitting(false);
       return;
     }
-    
+  
     try {
       if (task.id) {
         dispatch(updateTask(task));
@@ -72,9 +95,10 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
         dispatch(addTask(task));
         setSuccessMessage('Task added successfully');
       }
-      
+  
       setTask({ title: '', date: new Date(), color: 'blue', description: '', userId: '' });
-      
+      setTitleError('');
+
       setTimeout(() => {
         if (onClose) {
           onClose();
@@ -93,6 +117,11 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
       ...prevTask,
       [name]: value
     }));
+
+    if (name === 'title'){
+      const validationError = validateTitle(value.trim());
+      setTitleError(validationError);
+    }
   };
   
   const handleColorChange = (e, data) => {
@@ -119,17 +148,19 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
       ...prevTask,
       date: newDate
     }));
+    const validationError = validateDate(newDate);
+    setDateError(validationError);
   };
   
   const colorTooltipContent = (
     <div>
       <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Color Meanings:</div>
       <ul style={{ margin: '0', padding: '0 0 0 20px' }}>
-        <li>Red: High Priority tasks that need immediate attention</li>
-        <li>Blue: Normal Priority tasks for regular scheduling</li>
+        <li>Red: High PrioriTY</li>
+        <li>Blue: Normal Priority</li>
         <li>Green: Completed tasks</li>
-        <li>Purple: Tasks currently in progress</li>
-        <li>Orange: Tasks that require attention or follow-up</li>
+        <li>Purple: Tasks in progress</li>
+        <li>Orange: Next tasks</li>
       </ul>
     </div>
   );
@@ -146,13 +177,20 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
   return (
     <div>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <Input
-          name="title"
-          value={task.title}
-          onChange={handleChange}
-          placeholder="Task title"
-          required
-        />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <Input
+            name="title"
+            value={task.title}
+            onChange={handleChange}
+            placeholder="Task title"
+            required
+            style={{
+              borderColor: titleError ? 'red' : undefined,
+              backgroundColor: titleError ? '#ffe5e5' : undefined
+            }}
+          />
+          {titleError && <Text style={{ color: 'red', fontSize: '0.8rem' }}>{titleError}</Text>}
+        </div>
         
         <Input
           type="date"
@@ -161,6 +199,7 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
           onChange={handleDateChange}
           required
         />
+        {dateError && <Text style={{color: 'red'}}>{dateError}</Text>}
         
         <Tooltip
           content={colorTooltipContent}
