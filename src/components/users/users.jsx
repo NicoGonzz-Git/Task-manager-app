@@ -33,7 +33,7 @@ const UserList = () => {
   useEffect(() => {
     getUsers()
       .then(res => {
-        setUsers(res.data.slice(0, 5));
+        setUsers(res.data.slice(0, 10));
       })
       .catch(err => console.error(err))
       .finally(() => setLoading(false));

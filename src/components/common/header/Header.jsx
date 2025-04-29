@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { makeStyles, shorthands, tokens, Button, Toolbar, ToolbarButton } from '@fluentui/react-components';
-import { CalendarMonthRegular, TaskListLtrRegular, WeatherMoonRegular, WeatherSunnyRegular } from '@fluentui/react-icons';
+import { CalendarMonthRegular, Person24Regular, WeatherMoonRegular, WeatherSunnyRegular } from '@fluentui/react-icons';
+import { useNavigate } from 'react-router-dom';
+
 
 const useStyles = makeStyles({
   header: {
@@ -39,6 +41,7 @@ const useStyles = makeStyles({
 const Header = () => {
   const classes = useStyles();
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -49,11 +52,11 @@ const Header = () => {
       <div>Task Manager</div>
 
       <Toolbar className={classes.nav} aria-label="Navigation">
-        <ToolbarButton icon={<TaskListLtrRegular />} onClick={() => console.log('Tasks')}>
-          Tasks
-        </ToolbarButton>
-        <ToolbarButton icon={<CalendarMonthRegular />} onClick={() => console.log('Calendar')}>
+        <ToolbarButton icon={<CalendarMonthRegular />} onClick={() => navigate('/calendar')}>
           Calendar
+        </ToolbarButton>
+        <ToolbarButton icon={<Person24Regular />} onClick={() => navigate('/users')}>
+          Users
         </ToolbarButton>
       </Toolbar>
 

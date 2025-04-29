@@ -30,7 +30,8 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [titleError, setTitleError] = useState('');
   const [dateError, setDateError] = useState('');
-
+  const [descriptionError, setDescriptionError] = useState('');
+  
   const colorRef = useRef(null);
   
   const colorOptions = [
@@ -58,6 +59,12 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     if (!title) return 'Task title is required';
     if (title.length < 4) return 'Task title must be at least 4 characters long';
     if (/[^a-zA-Z0-9 ]/.test(title)) return 'Task title cannot contain special characters';
+    return '';
+  };
+
+  const validateDescription = (description) => {
+    if (!description) return 'Description title is required';
+    if (description.length < 10) return 'Description must be at least 10 characters long';
     return '';
   };
 
@@ -240,27 +247,40 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
           ))}
         </Dropdown>
         
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
         <Textarea
           name="description"
           value={task.description}
-          onChange={handleChange}
+          onChange={(e) => {
+            const value = e.target.value;
+            setTask(prevTask => ({ ...prevTask, description: value }));
+            const validationError = validateDescription(value);
+            setDescriptionError(validationError);
+          }}
           placeholder="Description of the task"
           rows={3}
+          style={{
+            borderColor: descriptionError ? 'red' : undefined,
+            backgroundColor: descriptionError ? '#ffe5e5' : undefined
+          }}
         />
+        {descriptionError && (
+          <Text style={{ color: 'red', fontSize: '0.8rem' }}>{descriptionError}</Text>
+        )}
+      </div>
         
         {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
         {successMessage && <Text style={{ color: 'green' }}>{successMessage}</Text>}
         
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-          <Button 
-            appearance="subtle" 
-            onClick={handleCancel} 
-            disabled={isSubmitting}
-            type="button"
-          >
+          <Button  appearance="subtle" onClick={handleCancel} disabled={isSubmitting} type="button">
             Cancel
           </Button>
-          <Button appearance="primary" type="submit" disabled={isSubmitting}>
+          
+          <Button appearance="primary"  type="submit" disabled={
+            isSubmitting || titleError !== '' || descriptionError !== '' || dateError !== '' || task.title.trim() === '' || 
+            task.description.trim() === ''}   
+          >
             {isSubmitting ? <Spinner size="tiny" /> : task.id ? 'Update' : 'Add'} Task
           </Button>
         </div>

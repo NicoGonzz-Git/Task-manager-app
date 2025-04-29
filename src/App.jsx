@@ -3,24 +3,20 @@ import Header from './components/common/header/Header';
 import Footer from './components/common/footer/Footer';
 import Calendar from './components/calendar/Calendar';
 import UserList from './components/users/users';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="">
-      <header className="App-header">
-        <Header />
-      </header>
-
-      <main className="">
-        <Calendar />
-      </main>
-      
-        <UserList />
-        
-      <footer className="">
-        <Footer />
-      </footer>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="*" element={<Calendar />} />
+        <Route path="/" element={<Calendar />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/users" element={<UserList />} />
+      </Routes>
+      <Footer />
+    </Router>
   );
 }
 
