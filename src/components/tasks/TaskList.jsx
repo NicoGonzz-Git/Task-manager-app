@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Text,
   Card,
   CardHeader,
   CardFooter,
   makeStyles,
-  tokens
+  tokens,
+  Button,
+  Dialog,
+  DialogSurface,
+  DialogTitle,
+  DialogBody,
+  DialogContent,
+  DialogActions,
+  Spinner
 } from '@fluentui/react-components';
-import { selectAllTasks } from '../../redux/slices/taskSlice';
+import { Edit24Regular, Delete24Regular } from '@fluentui/react-icons';
+import { selectAllTasks, deleteTask } from '../../redux/slices/taskSlice';
 import { getUsers } from '../../services/getUsers';
+import TaskForm from './TaskForm';
 
 const useStyles = makeStyles({
   taskList: {
@@ -60,13 +70,30 @@ const useStyles = makeStyles({
     color: 'white',
     fontWeight: 'bold',
     fontSize: '0.75rem',
+  },
+  cardActions: {
+    display: 'flex',
+    gap: '0.5rem',
+    marginLeft: 'auto'
+  },
+  deleteConfirmWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem'
   }
 });
 
 const TaskList = () => {
   const styles = useStyles();
+  const dispatch = useDispatch();
   const tasks = useSelector(selectAllTasks);
   const [users, setUsers] = useState({});
+  const [taskToEdit, setTaskToEdit] = useState(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     getUsers()
@@ -79,6 +106,43 @@ const TaskList = () => {
       })
       .catch(err => console.error('Error loading users:', err))
   }, []);
+
+  const handleEditTask = (task) => {
+    setTaskToEdit(task);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setTaskToEdit(null);
+    setIsEditDialogOpen(false);
+  };
+
+  const handleDeleteTask = (task) => {
+    setTaskToDelete(task);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteTask = () => {
+    setIsDeleting(true);
+    try {
+      dispatch(deleteTask(taskToDelete.id));
+      setSuccessMessage('Task deleted successfully');
+      setTimeout(() => {
+        setSuccessMessage('');
+        setIsDeleteDialogOpen(false);
+        setTaskToDelete(null);
+        setIsDeleting(false);
+      }, 1000);
+    } catch (err) {
+      console.error('Error deleting task:', err);
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setTaskToDelete(null);
+    setIsDeleteDialogOpen(false);
+  };
 
   if (tasks.length === 0) {
     return (
@@ -117,7 +181,23 @@ const TaskList = () => {
             Task Description: <Text>{task.description}</Text>
           </div>
           <CardFooter className={styles.cardFooter}>
-            <Text>{formatDate(task.date)}</Text>
+            <div>
+              <Text>{formatDate(task.date)}</Text>
+            </div>
+            <div className={styles.cardActions}>
+              <Button 
+                icon={<Edit24Regular />} 
+                appearance="subtle" 
+                aria-label="Edit task"
+                onClick={() => handleEditTask(task)}
+              />
+              <Button 
+                icon={<Delete24Regular />} 
+                appearance="subtle" 
+                aria-label="Delete task"
+                onClick={() => handleDeleteTask(task)}
+              />
+            </div>
             {task.userId && users[task.userId] && (
               <div className={styles.assignedUser}>
                 <div className={styles.userAvatar}>
@@ -129,6 +209,45 @@ const TaskList = () => {
           </CardFooter>
         </Card>
       ))}
+
+      <Dialog open={isEditDialogOpen} onOpenChange={(e, data) => !data.open && handleCloseEditDialog()}>
+        <DialogSurface>
+          <DialogTitle>Edit Task</DialogTitle>
+          <DialogContent>
+            {taskToEdit && (
+              <TaskForm 
+                initialTask={taskToEdit} 
+                onClose={handleCloseEditDialog}
+              />
+            )}
+          </DialogContent>
+        </DialogSurface>
+      </Dialog>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={(e, data) => !data.open && handleCloseDeleteDialog()}>
+        <DialogSurface>
+          <DialogTitle>Delete Task</DialogTitle>
+          <DialogBody>
+            <DialogContent>
+              Are you sure you want to delete the task "{taskToDelete?.title}"?
+              {successMessage && <Text style={{ color: 'green', marginTop: '1rem' }}>{successMessage}</Text>}
+            </DialogContent>
+            <DialogActions>
+              <Button appearance="secondary" onClick={handleCloseDeleteDialog} disabled={isDeleting}>
+                Cancel
+              </Button>
+              <Button 
+                appearance="primary" 
+                style={{ backgroundColor: 'red' }}
+                onClick={confirmDeleteTask} 
+                disabled={isDeleting}
+              >
+                {isDeleting ? <Spinner size="tiny" /> : 'Delete'}
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
     </div>
   );
 };
