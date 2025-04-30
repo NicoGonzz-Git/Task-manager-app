@@ -3,8 +3,10 @@ import { makeStyles, shorthands, tokens, Button, Toolbar, ToolbarButton } from '
 import { CalendarMonthRegular, Person24Regular, WeatherMoonRegular, WeatherSunnyRegular } from '@fluentui/react-icons';
 import { useNavigate } from 'react-router-dom';
 
-
-const useStyles = makeStyles({
+ /**
+  * Styles of the component
+  */
+ const useStyles = makeStyles({
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -36,13 +38,16 @@ const useStyles = makeStyles({
       display: 'block',
     },
   },
-});
+ });
 
 const Header = () => {
   const classes = useStyles();
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Manage the toggle dark mode button
+   */
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };

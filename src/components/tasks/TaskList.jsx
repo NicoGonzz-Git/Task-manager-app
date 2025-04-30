@@ -21,7 +21,10 @@ import { selectAllTasks, deleteTask } from '../../redux/slices/taskSlice';
 import { getUsers } from '../../services/getUsers';
 import TaskForm from './TaskForm';
 
-const useStyles = makeStyles({
+ /**
+  * Styles of the component
+  */
+ const useStyles = makeStyles({
   taskList: {
     display: 'flex',
     flexDirection: 'column',
@@ -81,7 +84,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: '0.5rem'
   }
-});
+ });
 
 const TaskList = () => {
   const styles = useStyles();
@@ -95,6 +98,9 @@ const TaskList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  /**
+   * Load users data
+   */
   useEffect(() => {
     getUsers()
       .then(res => {
@@ -107,21 +113,33 @@ const TaskList = () => {
       .catch(err => console.error('Error loading users:', err))
   }, []);
 
+  /**
+   *  Handle the edit task button logic
+   */
   const handleEditTask = (task) => {
     setTaskToEdit(task);
     setIsEditDialogOpen(true);
   };
 
+  /**
+   *  Handle the dialog edit closing logic
+   */
   const handleCloseEditDialog = () => {
     setTaskToEdit(null);
     setIsEditDialogOpen(false);
   };
 
+  /**
+   *  Handle the delete task button logic
+   */
   const handleDeleteTask = (task) => {
     setTaskToDelete(task);
     setIsDeleteDialogOpen(true);
   };
 
+  /**
+   *  Manage the delete of the task
+   */
   const confirmDeleteTask = () => {
     setIsDeleting(true);
     try {
@@ -139,11 +157,17 @@ const TaskList = () => {
     }
   };
 
+  /**
+   *  Handle the dialog delete closing logic
+   */
   const handleCloseDeleteDialog = () => {
     setTaskToDelete(null);
     setIsDeleteDialogOpen(false);
   };
 
+  /**
+   *  Validate if there are tasks
+   */
   if (tasks.length === 0) {
     return (
       <div className={styles.taskList}>
@@ -152,6 +176,9 @@ const TaskList = () => {
     );
   }
 
+  /**
+   *  Give an especific format to the date
+   */
   const formatDate = (date) => {
     if (!date) return '';
     const d = new Date(date);
@@ -162,6 +189,9 @@ const TaskList = () => {
     });
   };
 
+  /**
+   *  Bring the first letters of the name
+   */
   const getUserInitials = (name) => {
     if (!name) return '?';
     return name.split(' ').map(part => part[0]).join('').toUpperCase();

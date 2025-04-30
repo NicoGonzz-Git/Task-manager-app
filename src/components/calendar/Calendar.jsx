@@ -18,15 +18,21 @@ import { store } from '../../redux/slices/store';
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 3, 1));
-  const [highlightedDate] = useState(new Date(2025, 3, 28));
+  const [highlightedDate] = useState(new Date(2025, 3, 30));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  /**
+   * Load the previous month
+   */
   const prevMonth = () => {
     setCurrentMonth(
       new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
     );
   };
 
+  /**
+   * Load the next month
+   */
   const nextMonth = () => {
     setCurrentMonth(
       new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1)

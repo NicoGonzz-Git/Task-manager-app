@@ -1,5 +1,8 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
 
+/**
+ * Array of tasks
+ */
 const initialState = {
   tasks: [
     {
@@ -29,6 +32,9 @@ const initialState = {
   ]
 };
 
+/**
+ * Slice from redux that manage task logic
+ */
 export const taskSlice = createSlice({
   name: 'tasks',
   initialState,
@@ -38,6 +44,7 @@ export const taskSlice = createSlice({
         state.tasks.push(action.payload);
       },
       prepare: (task) => {
+        console.log(task)
         return {
           payload: {
             id: nanoid(),
@@ -50,20 +57,32 @@ export const taskSlice = createSlice({
         };
       }
     },
+    /**
+     * Update an existing task according to the ID
+     */
     updateTask: (state, action) => {
       const index = state.tasks.findIndex(task => task.id === action.payload.id);
       if (index !== -1) {
         state.tasks[index] = action.payload;
       }
     },
+    /**
+     * Delete an existing task according to the ID
+     */
     deleteTask: (state, action) => {
       state.tasks = state.tasks.filter(task => task.id !== action.payload);
     }
   }
 });
 
+/**
+ * Bring all the tasks 
+ */
 export const selectAllTasks = (state) => state.tasks.tasks;
 
+/**
+ * Bring the tasks according to an especific date
+ */
 export const selectTasksByDate = (state, date) => {
   if (!date) return [];
   const targetDate = new Date(date);

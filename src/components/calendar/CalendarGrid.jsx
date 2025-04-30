@@ -2,6 +2,9 @@ import React from 'react';
 import DayCell from './DayCell';
 
 const CalendarGrid = ({ currentMonth, highlightedDate }) => {
+    /**
+     * Bring the days of each Month 
+     */
     const getDaysInMonth = (date) => {
         const year = date.getFullYear();
         const month = date.getMonth();
@@ -27,6 +30,9 @@ const CalendarGrid = ({ currentMonth, highlightedDate }) => {
         return days;
     };
 
+    /**
+     * Highlight the current day 
+     */
     const isHighlighted = (date) =>
         date.getDate() === highlightedDate.getDate() &&
         date.getMonth() === highlightedDate.getMonth() &&

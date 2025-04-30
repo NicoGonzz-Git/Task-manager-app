@@ -17,6 +17,9 @@ import {
 import { selectTasksByDate } from '../../redux/slices/taskSlice';
 import TaskForm from '../tasks/TaskForm';
 
+/**
+ * Styles of the component
+ */
 const useStyles = makeStyles({
   dayCell: {
     position: 'relative',
@@ -80,6 +83,9 @@ const useStyles = makeStyles({
   }
 });
 
+/**
+ * Cell logic
+ */
 const DayCell = ({ date, currentMonth, isHighlighted, hasMarkers }) => {
   const styles = useStyles();
   const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
@@ -92,6 +98,9 @@ const DayCell = ({ date, currentMonth, isHighlighted, hasMarkers }) => {
     isHighlighted && styles.highlighted
   );
 
+  /**
+   * Handle the dialog logic
+   */
   const handleDialogClose = () => {
     setIsDialogOpen(false);
   };

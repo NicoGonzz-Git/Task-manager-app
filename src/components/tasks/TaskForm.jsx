@@ -42,6 +42,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     { key: 'orange', text: 'Orange', value: 'orange' }
   ];
 
+  /**
+   * Load users data
+   */
   useEffect(() => {
     setLoadingUsers(true);
     getUsers()
@@ -55,6 +58,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
       .finally(() => setLoadingUsers(false));
   }, []);
   
+  /**
+   * Validations of the input title
+   */
   const validateTitle = (title) => {
     if (!title) return 'Task title is required';
     if (title.length < 4) return 'Task title must be at least 4 characters long';
@@ -62,12 +68,18 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     return '';
   };
 
+  /**
+   * Validations of the input description
+   */
   const validateDescription = (description) => {
     if (!description) return 'Description title is required';
     if (description.length < 10) return 'Description must be at least 10 characters long';
     return '';
   };
 
+  /**
+   * Validations of the select date
+   */
   const validateDate = (date) =>{
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -77,6 +89,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     return '';
   }
   
+  /**
+   * Handle the submit logic of the form
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -118,6 +133,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     }
   };
   
+  /**
+   * Handle the input change characters of the title
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTask(prevTask => ({
@@ -131,6 +149,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     }
   };
   
+  /**
+   * Change the color of tasks
+   */
   const handleColorChange = (e, data) => {
     setTask(prevTask => ({
       ...prevTask,
@@ -138,6 +159,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     }));
   };
 
+  /**
+   * Handle the input change characters of the title
+   */
   const handleUserChange = (e, data) => {
     setTask(prevTask => ({
       ...prevTask,
@@ -145,10 +169,16 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     }));
   };
   
+  /**
+   * Give the date format 
+   */
   const formatDate = (date) => {
     return date.toISOString().split('T')[0];
   };
   
+  /**
+   * Handle the input change from the Date selector
+   */
   const handleDateChange = (e) => {
     const newDate = new Date(e.target.value);
     setTask(prevTask => ({
@@ -159,6 +189,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     setDateError(validationError);
   };
   
+  /**
+   * Color ToolTip of each meaning
+   */
   const colorTooltipContent = (
     <div>
       <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Color Meanings:</div>
@@ -171,7 +204,10 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
       </ul>
     </div>
   );
-  
+
+  /**
+   * Handle the cancel form button
+   */  
   const handleCancel = (e) => {
     e.preventDefault();
     e.stopPropagation(); 

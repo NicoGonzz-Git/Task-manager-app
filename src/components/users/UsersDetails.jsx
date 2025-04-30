@@ -11,7 +11,10 @@ import {
   Spinner
 } from '@fluentui/react-components';
 
-const useStyles = makeStyles({
+ /**
+  * Styles of the component
+  */
+ const useStyles = makeStyles({
   container: {
     padding: '32px',
     display: 'flex',
@@ -21,14 +24,17 @@ const useStyles = makeStyles({
     width: '300px',
     padding: '16px',
   }
-});
+ });
 
-const UserDetails = () => {
+ const UserDetails = () => {
   const styles = useStyles();
   const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Search the user according to the id
+   */
   useEffect(() => {
     getUsers()
       .then(res => {
@@ -39,6 +45,9 @@ const UserDetails = () => {
       .finally(() => setLoading(false));
   }, [userId]);
 
+  /**
+   * Validate if the data was loaded
+   */
   if (loading) {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -67,6 +76,6 @@ const UserDetails = () => {
       </Card>
     </div>
   );
-};
+ };
 
 export default UserDetails;
