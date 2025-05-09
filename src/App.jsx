@@ -6,7 +6,6 @@ import UserList from './components/users/Users';
 import UserDetails from './components/users/UsersDetails';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-
 function App() {
   return (
     <Router>
