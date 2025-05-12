@@ -1,27 +1,45 @@
-import React from "react";
 import { useMsal } from "@azure/msal-react";
+import { Button, makeStyles, tokens } from "@fluentui/react-components";
+import { apiScopes } from "../../auth/auth-config";
+
+const useStyles = makeStyles({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: tokens.spacingVerticalM,
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh",
+  },
+});
 
 const LoginPage = ({ onLoginSuccess }) => {
-    const { instance } = useMsal();
-  
-    const login = async () => {
-      try {
-        const response = await instance.loginPopup({
-          scopes: ["User.Read"],
-        });
-  
-        instance.setActiveAccount(response.account);
-        onLoginSuccess();
-      } catch (err) {
-        console.error("Login error:", err);
-      }
-    };
-  
-    return (
-      <div>
-        <button onClick={login}>Iniciar sesión</button>
-      </div>
-    );
+  const { instance } = useMsal();
+  const styles = useStyles();
+
+  const login = async () => {
+    try {
+      const response = await instance.loginPopup({
+        scopes: apiScopes,
+      });
+      instance.setActiveAccount(response.account);
+      onLoginSuccess();
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
+
+  return (
+    <div className={styles.container}>
+      <Button appearance="primary" onClick={login}>
+        Iniciar sesión como Administrador
+      </Button>
+      <Button appearance="secondary" onClick={login}>
+        Iniciar sesión como Invitado
+      </Button>
+    </div>
+
+  );
+};
 
 export default LoginPage;

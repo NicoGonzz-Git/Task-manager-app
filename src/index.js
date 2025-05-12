@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import App from './App';
@@ -8,6 +7,9 @@ import { PublicClientApplication } from '@azure/msal-browser';
 import AuthGate from './components/auth/AuthGate';
 
 const msalInstance = new PublicClientApplication(msalConfig);
+
+msalInstance.initialize().then(() => {
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -20,3 +22,4 @@ root.render(
     </FluentProvider>
   </MsalProvider>
 );
+});
