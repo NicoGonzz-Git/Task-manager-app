@@ -17,10 +17,9 @@ import {
   Spinner
 } from '@fluentui/react-components';
 import { Edit24Regular, Delete24Regular } from '@fluentui/react-icons';
-import { selectAllTasks, deleteTask } from '../../redux/slices/taskSlice';
+import { selectAllTasks, fetchTasks, deleteTaskAsync } from '../../redux/slices/taskSlice';
 import { getUsers } from '../../services/getUsers';
 import TaskForm from './TaskForm';
-import taskService  from "../../services/taskService";
 
  /**
   * Styles of the component
@@ -98,8 +97,6 @@ const TaskList = () => {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [taskList, setTaskList] = useState([]);     
-  const [loadingTasks, setLoadingTasks] = useState(true); 
 
   /**
    * Load users data
@@ -117,17 +114,8 @@ const TaskList = () => {
   }, []);
 
   useEffect(() => {
-  taskService.getTasks()
-    .then(res => {
-      setTaskList(res.data);
-      console.log(res)
-      setLoadingTasks(false);
-    })
-    .catch(err => {
-      console.error("Error fetching tasks:", err);
-      setLoadingTasks(false);
-    });
-}, []);
+  dispatch(fetchTasks());
+  }, [dispatch]);
 
   /**
    *  Handle the edit task button logic
@@ -159,7 +147,7 @@ const TaskList = () => {
   const confirmDeleteTask = () => {
     setIsDeleting(true);
     try {
-      dispatch(deleteTask(taskToDelete.id));
+      dispatch(deleteTaskAsync(taskToDelete.id));
       setSuccessMessage('Task deleted successfully');
       setTimeout(() => {
         setSuccessMessage('');

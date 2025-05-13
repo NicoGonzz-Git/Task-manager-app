@@ -80,14 +80,20 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
   /**
    * Validations of the select date
    */
-  const validateDate = (date) =>{
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    if(date < today){
-      return 'Date must be today or later'
-    }
-    return '';
+  const validateDate = (date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const dateToCompare = typeof date === 'string' ? new Date(date) : date;
+  
+  const dateWithoutTime = new Date(dateToCompare);
+  dateWithoutTime.setHours(0, 0, 0, 0);
+  
+  if (dateWithoutTime < today) {
+    return 'Date must be today or later';
   }
+  return '';
+ }
   
   /**
    * Handle the submit logic of the form
@@ -170,23 +176,47 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
   };
   
   /**
-   * Give the date format 
-   */
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
-  
-  /**
    * Handle the input change from the Date selector
    */
   const handleDateChange = (e) => {
-    const newDate = new Date(e.target.value);
+  try {
+    const dateValue = e.target.value;
+    
+    const newDate = new Date(dateValue + 'T00:00:00');
+    
+    if (isNaN(newDate.getTime())) {
+      console.error('Invalid date input:', dateValue);
+      setDateError('Invalid date format');
+      return;
+    }
+    
     setTask(prevTask => ({
       ...prevTask,
-      date: newDate
+      date: newDate.toISOString()
     }));
+    
     const validationError = validateDate(newDate);
     setDateError(validationError);
+  } catch (error) {
+    console.error('Error processing date:', error);
+    setDateError('Error processing date');
+  }
+  };
+
+  /**
+   * Date of the input displayer
+   */
+  const formatDateForInput = (dateString) => {
+  if (!dateString) return '';
+  
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
   };
   
   /**
@@ -238,7 +268,7 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
         <Input
           type="date"
           name="date"
-          value={formatDate(task.date)}
+          value= {formatDateForInput(task.date)}
           onChange={handleDateChange}
           required
         />

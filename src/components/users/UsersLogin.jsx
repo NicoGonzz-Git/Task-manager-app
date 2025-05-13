@@ -32,10 +32,10 @@ const LoginPage = ({ onLoginSuccess }) => {
   return (
     <div className={styles.container}>
       <Button appearance="primary" onClick={login}>
-        Iniciar sesión como Administrador
+        Administrator Login
       </Button>
       <Button appearance="secondary" onClick={login}>
-        Iniciar sesión como Invitado
+        Guest Login
       </Button>
     </div>
 
