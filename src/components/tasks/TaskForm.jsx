@@ -10,15 +10,15 @@ import {
   Spinner,
   Tooltip
 } from '@fluentui/react-components';
-import { addTask, updateTask } from '../../redux/slices/taskSlice';
-import { getUsers } from '../../services/getUsers';
+import userService from '../../services/getUsers';
+import { updateTaskAsync, createTaskAsync, fetchTasks } from '../../redux/slices/taskSlice';
 
 const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) => {
   const dispatch = useDispatch();
   const [task, setTask] = useState(initialTask || {
     title: '',
     date: selectedDate,
-    color: 'blue',
+    color: 'red',
     description: '',
     userId: ''
   });
@@ -47,9 +47,9 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
    */
   useEffect(() => {
     setLoadingUsers(true);
-    getUsers()
+    userService.getUsers()
       .then(res => {
-        setUsers(res.data.slice(0, 10)); 
+        setUsers(res.data.data.slice(0, 10)); 
       })
       .catch(err => {
         console.error('Error loading users:', err);
@@ -114,17 +114,53 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
       setIsSubmitting(false);
       return;
     }
-  
+    const taskDate = new Date(task.date)
     try {
-      if (task.id) {
-        dispatch(updateTask(task));
-        setSuccessMessage('Task updated successfully');
-      } else {
-        dispatch(addTask(task));
-        setSuccessMessage('Task added successfully');
+      const taskToSave = {
+        title: task.title,
+        description: task.description,
+        assignedUserId: task.userId,
+        createdDate: taskDate,
+        role: task.role || 'user'
+      };
+      console.log(taskToSave)
+      
+     if (task.id) {
+    dispatch(updateTaskAsync({ id: task.id, data: taskToSave }))
+    .unwrap()
+    .then(() => {
+      setSuccessMessage('');
+      dispatch(fetchTasks());
+    })
+    .then(() => {
+      setSuccessMessage('Task updated successfully');
+    })
+    .catch((err) => {
+      setErrorMessage('Error updating task: ' + err);
+    });
+  } else {
+  dispatch(createTaskAsync(taskToSave))
+  .unwrap()
+  .then(() => {
+    setSuccessMessage('Task added successfully');
+    dispatch(fetchTasks());
+    setTask({ title: '', date: new Date(), color: 'blue', description: '', userId: '', role: 'user' });
+    setTitleError('');
+    setTimeout(() => {
+      if (onClose) {
+        onClose();
       }
+    }, 1000);
+  })
+  .catch((error) => {
+    setErrorMessage('There was an error saving the task: ' + error);
+  })
+  .finally(() => {
+    setIsSubmitting(false);
+  });
+  }
   
-      setTask({ title: '', date: new Date(), color: 'blue', description: '', userId: '' });
+      setTask({ title: '', date: new Date(), color: 'blue', description: '', userId: '', role: 'user' });
       setTitleError('');
 
       setTimeout(() => {
@@ -137,6 +173,7 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     } finally {
       setIsSubmitting(false);
     }
+    
   };
   
   /**

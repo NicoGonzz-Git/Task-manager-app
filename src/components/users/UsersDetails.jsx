@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getUsers } from '../../services/getUsers';
+import userService from '../../services/getUsers';
 import {
   makeStyles,
   Card,
@@ -8,7 +8,7 @@ import {
   CardPreview,
   Text,
   Title3,
-  Spinner
+  Spinner,
 } from '@fluentui/react-components';
 
  /**
@@ -36,9 +36,9 @@ import {
    * Search the user according to the id
    */
   useEffect(() => {
-    getUsers()
+    userService.getUsers()
       .then(res => {
-        const foundUser = res.data.find(u => u.id.toString() === userId);
+        const foundUser = res.data.data.find(u => u.id.toString() === userId);
         setUser(foundUser);
       })
       .catch(err => console.error(err))

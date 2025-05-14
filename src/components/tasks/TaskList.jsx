@@ -18,7 +18,7 @@ import {
 } from '@fluentui/react-components';
 import { Edit24Regular, Delete24Regular } from '@fluentui/react-icons';
 import { selectAllTasks, fetchTasks, deleteTaskAsync } from '../../redux/slices/taskSlice';
-import { getUsers } from '../../services/getUsers';
+import userService from '../../services/getUsers';
 import TaskForm from './TaskForm';
 
  /**
@@ -102,7 +102,7 @@ const TaskList = () => {
    * Load users data
    */
   useEffect(() => {
-    getUsers()
+    userService.getUsers()
       .then(res => {
         const userMap = {};
         res.data.forEach(user => {

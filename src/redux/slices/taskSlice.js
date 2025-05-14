@@ -25,6 +25,29 @@ export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAP
   }
 });
 
+export const createTaskAsync = createAsyncThunk(
+  'tasks/createTask',
+  async (taskData, thunkAPI) => {
+    try {
+      const taskToCreate = {
+        ...taskData,
+        role: taskData.role || 'user'
+      };
+      
+      const response = await taskService.createTask(taskToCreate);
+      
+      return {
+        id: response.data.id || nanoid(),
+        title: taskData.title,
+        description: taskData.description || '',
+        role: taskData.role || 'user'
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 export const updateTaskAsync = createAsyncThunk(
   'tasks/updateTask',
   async ({ id, data }, thunkAPI) => {
@@ -107,7 +130,19 @@ export const taskSlice = createSlice({
       .addCase(fetchTasks.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(createTaskAsync.fulfilled, (state, action) => {
+      state.tasks.push(action.payload);
+    })
+    .addCase(updateTaskAsync.fulfilled, (state, action) => {
+      const index = state.tasks.findIndex(task => task.id === action.payload.id);
+      if (index !== -1) {
+        state.tasks[index] = { ...state.tasks[index], ...action.payload };
+      }
+    })
+    .addCase(deleteTaskAsync.fulfilled, (state, action) => {
+      state.tasks = state.tasks.filter(task => task.id !== action.payload);
+    })
   }
 });
 

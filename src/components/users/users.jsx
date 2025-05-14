@@ -1,5 +1,5 @@
   import React, { useEffect, useState } from 'react';
-  import { getUsers } from '../../services/getUsers';
+  import userService from '../../services/getUsers';
   import {
     makeStyles,
     Card,
@@ -10,9 +10,16 @@
     Spinner,
     Input,
     Dropdown,
-    Option
+    Option,
+    Button,
+    Dialog,
+    DialogSurface,
+    DialogTitle,
+    DialogBody,
+    DialogActions,
   } from '@fluentui/react-components';
   import { Search24Regular } from '@fluentui/react-icons';
+import { Delete24Regular } from '@fluentui/react-icons';
 
   /**
    * Styles of the component
@@ -60,14 +67,16 @@
     const [selectedSuggestion, setSelectedSuggestion] = useState(null);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [filterBy, setFilterBy] = useState('name');
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
     
     /**
      * Load users data
      */
     useEffect(() => {
-      getUsers()
+      userService.getUsers()
         .then(res => {
-          const processedUsers = res.data.map(user => {
+          const processedUsers = res.data.data.map(user => {
             const nameParts = user.name.split(' ');
             return {
               ...user,
@@ -161,6 +170,19 @@
       setSearchTerm('');
       setFilteredUsers(allUsers);
     };
+  
+    /**
+     * Handle the user delet method
+     */
+    const handleDelete = async (id) => {
+    try {
+      await userService.deleteUsers(id);
+      setAllUsers(prev => prev.filter(user => user.id !== id));
+      setFilteredUsers(prev => prev.filter(user => user.id !== id));
+      } catch (err) {
+      console.error('Error deleting user:', err);
+      }
+    };
 
     /**
      * Validate if the data was loaded
@@ -233,11 +255,24 @@
                 <CardHeader
                   header={<Title3>{user.name}</Title3>}
                   body={<Title3>{user.description}</Title3>}
+                  action= {
+                  <Button
+                    icon={<Delete24Regular />}
+                    appearance="subtle"
+                    aria-label="Delete task"
+                      onClick={() => {
+                        setUserToDelete(user.id);
+                        setShowConfirmDialog(true);
+                      }}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  />}
                 />
-                <CardPreview>
-                  <Text>Email: {user.email}</Text>
-                </CardPreview>
-              </Card>
+                  <CardPreview>
+                    <Text>Email: {user.email}</Text>
+                      <br />
+                    <Text>ID: {user.id}</Text>
+                  </CardPreview>
+              </Card> 
             ))
           ) : (
             <div className={styles.noResults}>
@@ -245,6 +280,26 @@
             </div>
           )}
         </div>
+
+        <Dialog open={showConfirmDialog} onOpenChange={(_, data) => setShowConfirmDialog(data.open)}>
+          <DialogSurface>
+            <DialogTitle>Confirm delete</DialogTitle>
+              <DialogBody>
+              Are you sure you want to delete this user?
+              </DialogBody>
+          <DialogActions>
+            <Button appearance="secondary" onClick={() => setShowConfirmDialog(false)}>
+              Cancel
+            </Button>
+            <Button appearance="primary" onClick={() => {
+              handleDelete(userToDelete);
+              setShowConfirmDialog(false);
+              }}>
+              Delete
+            </Button>
+          </DialogActions>
+        </DialogSurface>
+      </Dialog>
       </>
     );
   };

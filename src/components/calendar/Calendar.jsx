@@ -17,8 +17,8 @@ import { Provider } from 'react-redux';
 import { store } from '../../redux/slices/store';
 
 const Calendar = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 3, 1));
-  const [highlightedDate] = useState(new Date(2025, 3, 30));
+  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 4, 1));
+  const [highlightedDate] = useState(new Date(2025, 4, 14));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   /**
