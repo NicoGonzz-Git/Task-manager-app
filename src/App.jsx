@@ -2,7 +2,7 @@ import './App.css';
 import Header from './components/common/header/Header';
 import Footer from './components/common/footer/Footer';
 import Calendar from './components/calendar/Calendar';
-import UserList from './components/users/Users';
+import UserList from './components/users/UsersList';
 import UserDetails from './components/users/UsersDetails';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
