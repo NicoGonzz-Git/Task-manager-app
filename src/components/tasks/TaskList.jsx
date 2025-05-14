@@ -105,9 +105,6 @@ const TaskList = () => {
     userService.getUsers()
       .then(res => {
         const userMap = {};
-        res.data.forEach(user => {
-          userMap[user.id] = user;
-        });
         setUsers(userMap);
       })
       .catch(err => console.error('Error loading users:', err))

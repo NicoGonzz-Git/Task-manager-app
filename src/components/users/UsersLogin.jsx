@@ -6,10 +6,11 @@ const useStyles = makeStyles({
   container: {
     display: "flex",
     flexDirection: "column",
-    gap: tokens.spacingVerticalM,
+    gap: tokens.spacingVerticalL,
     alignItems: "center",
     justifyContent: "center",
     height: "100vh",
+    width: "50%"
   },
 });
 
@@ -32,10 +33,7 @@ const LoginPage = ({ onLoginSuccess }) => {
   return (
     <div className={styles.container}>
       <Button appearance="primary" onClick={login}>
-        Administrator Login
-      </Button>
-      <Button appearance="secondary" onClick={login}>
-        Guest Login
+        Login
       </Button>
     </div>
 

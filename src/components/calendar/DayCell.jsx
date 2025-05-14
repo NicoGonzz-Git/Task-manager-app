@@ -86,7 +86,7 @@ const useStyles = makeStyles({
 /**
  * Cell logic
  */
-const DayCell = ({ date, currentMonth, isHighlighted, hasMarkers }) => {
+const DayCell = ({ date, currentMonth, isHighlighted }) => {
   const styles = useStyles();
   const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
   const tasks = useSelector(state => selectTasksByDate(state, date));

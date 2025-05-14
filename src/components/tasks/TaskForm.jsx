@@ -121,55 +121,54 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
         description: task.description,
         assignedUserId: task.userId,
         createdDate: taskDate,
-        role: task.role || 'user'
+        role: task.role || 'user',
+        priority: task.color
       };
       console.log(taskToSave)
       
      if (task.id) {
-    dispatch(updateTaskAsync({ id: task.id, data: taskToSave }))
-    .unwrap()
-    .then(() => {
-      setSuccessMessage('');
-      dispatch(fetchTasks());
-    })
-    .then(() => {
-      setSuccessMessage('Task updated successfully');
-    })
-    .catch((err) => {
-      setErrorMessage('Error updating task: ' + err);
-    });
+      dispatch(updateTaskAsync({ id: task.id, data: taskToSave }))
+      .unwrap()
+      .then(() => {
+        setSuccessMessage('');
+        dispatch(fetchTasks());
+      })
+      .then(() => {
+        setSuccessMessage('Task updated successfully');
+      })
+      .catch((err) => {
+        setErrorMessage('Error updating task: ' + err);
+      });
   } else {
-  dispatch(createTaskAsync(taskToSave))
-  .unwrap()
-  .then(() => {
-    setSuccessMessage('Task added successfully');
-    dispatch(fetchTasks());
-    setTask({ title: '', date: new Date(), color: 'blue', description: '', userId: '', role: 'user' });
-    setTitleError('');
-    setTimeout(() => {
-      if (onClose) {
-        onClose();
-      }
-    }, 1000);
-  })
-  .catch((error) => {
-    setErrorMessage('There was an error saving the task: ' + error);
-  })
-  .finally(() => {
-    setIsSubmitting(false);
-  });
-  }
-  
-      setTask({ title: '', date: new Date(), color: 'blue', description: '', userId: '', role: 'user' });
+      dispatch(createTaskAsync(taskToSave))
+      .unwrap()
+    .then(() => {
+      setSuccessMessage('Task added successfully');
+      dispatch(fetchTasks());
+      setTask({ title: '', date: new Date(), color: '', description: '', userId: '', role: 'user' });
       setTitleError('');
-
+      setTimeout(() => {
+        if (onClose) {
+          onClose();
+        }
+      }, 1000);
+    })
+    .catch((error) => {
+      setErrorMessage('There was an error saving the task: ' + error);
+    })
+    .finally(() => {
+      setIsSubmitting(false);
+    });
+  }
+      setTask({ title: '', date: new Date(), color: '', description: '', userId: '', role: 'user' });
+      setTitleError('');
       setTimeout(() => {
         if (onClose) {
           onClose();
         }
       }, 1000);
     } catch (err) {
-      setErrorMessage('There was an error saving the task');
+      setErrorMessage('There was an error saving the task' + err);
     } finally {
       setIsSubmitting(false);
     }
