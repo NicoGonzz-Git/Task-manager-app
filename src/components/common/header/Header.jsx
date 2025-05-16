@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, shorthands, tokens, Button, Toolbar, ToolbarButton } from '@fluentui/react-components';
 import { CalendarMonthRegular, Person24Regular, WeatherMoonRegular, WeatherSunnyRegular } from '@fluentui/react-icons';
 import { useNavigate } from 'react-router-dom';
+import userService from '../../../services/getUsers';
 
  /**
   * Styles of the component
@@ -45,6 +46,24 @@ const Header = () => {
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
 
+  const [canAccessUsers, setCanAccessUsers] = useState(true);
+
+  /**
+   * Check user permissions on component mount
+   */
+  useEffect(() => {
+    userService.getUsers()
+      .then(res => {
+        setCanAccessUsers(true);
+      })
+      .catch(err => {
+        console.error('Error checking user permissions:', err);
+        if (err.response && err.response.status === 403) {
+          setCanAccessUsers(false);
+        }
+      });
+  }, []);
+
   /**
    * Manage the toggle dark mode button
    */
@@ -60,9 +79,11 @@ const Header = () => {
         <ToolbarButton icon={<CalendarMonthRegular />} onClick={() => navigate('/calendar')}>
           Calendar
         </ToolbarButton>
+        {canAccessUsers && (
         <ToolbarButton icon={<Person24Regular />} onClick={() => navigate('/users')}>
           Users
         </ToolbarButton>
+        )}
       </Toolbar>
 
       <Button 

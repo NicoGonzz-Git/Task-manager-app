@@ -10,7 +10,6 @@ const useStyles = makeStyles({
     alignItems: "center",
     justifyContent: "center",
     height: "100vh",
-    width: "50%"
   },
 });
 

@@ -31,6 +31,7 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
   const [titleError, setTitleError] = useState('');
   const [dateError, setDateError] = useState('');
   const [descriptionError, setDescriptionError] = useState('');
+  const [canSelectUsers, setCanSelectusers ] = useState(true);
   
   const colorRef = useRef(null);
   
@@ -50,10 +51,13 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
     userService.getUsers()
       .then(res => {
         setUsers(res.data.data.slice(0, 10)); 
+        setCanSelectusers(true)
       })
       .catch(err => {
         console.error('Error loading users:', err);
-        setErrorMessage('Failed to load users');
+        if(err.response && err.response.status === 403){
+          setCanSelectusers(false);
+        }
       })
       .finally(() => setLoadingUsers(false));
   }, []);
@@ -335,19 +339,29 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
           </div>
         </Tooltip>
 
-        <Dropdown
-          placeholder={loadingUsers ? "Loading users..." : "Assign to user"}
-          disabled={loadingUsers}
-          value={task.userId}
-          selectedOptions={task.userId ? [task.userId] : []}
-          onOptionSelect={handleUserChange}
-        >
-          {users.map(user => (
-            <Option key={user.id} value={user.id.toString()}>
-              {user.name}
+        {canSelectUsers ? (
+          <div>
+            <Text as="label" htmlFor="user-select">Assign to:</Text>
+            <Dropdown
+            id="user-select"
+            placeholder="Select a user"
+            value={task.userId}
+            selectedOptions={task.userId ? [task.userId] : []}
+            onOptionSelect={handleUserChange}
+            disabled={loadingUsers}
+            >
+              {loadingUsers ? (
+            <Option>Loading users...</Option>
+            ) : (
+            users.map(user => (
+            <Option key={user.id} value={user.id}>
+              {user.name || user.email}
             </Option>
-          ))}
-        </Dropdown>
+              ))
+            )}
+           </Dropdown>
+          </div>
+        ) : null}
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
         <Textarea

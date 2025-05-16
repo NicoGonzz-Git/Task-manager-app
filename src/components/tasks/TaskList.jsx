@@ -97,18 +97,25 @@ const TaskList = () => {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [hasPermissions, setHasPermissions] = useState(true);
 
-  /**
-   * Load users data
-   */
   useEffect(() => {
     userService.getUsers()
       .then(res => {
         const userMap = {};
-        setUsers(userMap);
-      })
-      .catch(err => console.error('Error loading users:', err))
-  }, []);
+        res.forEach(user => {
+        userMap[user.id] = user;
+      });
+      setUsers(userMap);
+      setHasPermissions(true);
+    })
+    .catch(err => {
+      console.error('Error loading users:', err);
+      if (err.response && err.response.status === 403) {
+        setHasPermissions(false);
+      }
+    });
+}, []);
 
   useEffect(() => {
   dispatch(fetchTasks());
@@ -221,12 +228,14 @@ const TaskList = () => {
                 appearance="subtle" 
                 aria-label="Edit task"
                 onClick={() => handleEditTask(task)}
+                disabled = {!hasPermissions}
               />
               <Button 
                 icon={<Delete24Regular />} 
                 appearance="subtle" 
                 aria-label="Delete task"
                 onClick={() => handleDeleteTask(task)}
+                disabled = {!hasPermissions}
               />
             </div>
             {task.userId && users[task.userId] && (

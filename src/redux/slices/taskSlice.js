@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, nanoid, createSelector } from '@reduxjs/toolkit';
 import taskService from '../../services/taskService';
 
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAPI) => {
@@ -148,25 +148,18 @@ export const taskSlice = createSlice({
 
 export const selectAllTasks = (state) => state.tasks.tasks;
 
-export const selectTasksByDate = (state, date) => {
-  if (!date) return [];
-  
-  const targetDate = new Date(date);
-  
-  const year = targetDate.getUTCFullYear();
-  const month = targetDate.getUTCMonth();
-  const day = targetDate.getUTCDate();
-  
-  return state.tasks.tasks.filter(task => {
-    const taskDate = new Date(task.date);
-    
-    return (
-      taskDate.getFullYear() === year &&
-      taskDate.getMonth() === month &&
-      taskDate.getDate() === day
-    );
-  });
+const formatDateKey = (date) => {
+  return new Date(date).toISOString().split('T')[0];
 };
+
+export const selectTasksByDate = createSelector(
+  [selectAllTasks, (_, date) => formatDateKey(date)],
+  (tasks, formattedDate) => {
+    return tasks.filter(task => {
+      return formatDateKey(task.date) === formattedDate;
+    });
+  }
+);
 
 export const { addTask, updateTask, deleteTask } = taskSlice.actions;
 export default taskSlice.reducer;
