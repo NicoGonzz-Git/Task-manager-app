@@ -39,6 +39,13 @@ const Calendar = () => {
     );
   };
 
+  /**
+   * Handle closing the dialog after a task is added or updated
+   */
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <Provider store={store}>
       <div className="calendar-container" style={{ maxWidth: '62rem', margin: '0 auto', padding: '1rem' }}>
@@ -78,7 +85,7 @@ const Calendar = () => {
                 <DialogContent>
                   <TaskForm
                     selectedDate={new Date()}
-                    onClose={() => setIsDialogOpen(false)}
+                    onClose={handleDialogClose}
                   />
                 </DialogContent>
               </DialogBody>

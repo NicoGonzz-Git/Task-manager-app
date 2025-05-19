@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import { 
   Text, 
@@ -16,6 +16,8 @@ import {
 } from '@fluentui/react-components';
 import { selectTasksByDate } from '../../redux/slices/taskSlice';
 import TaskForm from '../tasks/TaskForm';
+import { fetchTasks } from '../../redux/slices/taskSlice';
+import { useDispatch } from 'react-redux';
 
 /**
  * Styles of the component
@@ -91,7 +93,14 @@ const DayCell = ({ date, currentMonth, isHighlighted }) => {
   const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
   const tasks = useSelector(state => selectTasksByDate(state, date));
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+  if (!isDialogOpen) {
+    dispatch(fetchTasks());
+  }
+}, [isDialogOpen, dispatch]);
+  
   const cellClass = mergeClasses(
     styles.dayCell,
     isCurrentMonth ? styles.currentMonth : styles.otherMonth,

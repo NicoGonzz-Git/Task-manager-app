@@ -1,7 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import DayCell from './DayCell';
+import { useDispatch } from 'react-redux';
+import { fetchTasks } from '../../redux/slices/taskSlice';
 
 const CalendarGrid = ({ currentMonth, highlightedDate }) => {
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+    dispatch(fetchTasks());
+    }, [dispatch, currentMonth]);
+
     /**
      * Bring the days of each Month 
      */

@@ -101,14 +101,14 @@ const TaskList = () => {
 
   useEffect(() => {
     userService.getUsers()
-      .then(res => {
-        const userMap = {};
-        res.forEach(user => {
-        userMap[user.id] = user;
-      });
-      setUsers(userMap);
-      setHasPermissions(true);
-    })
+  .then(res => {
+    const userMap = {};
+    res.data.data.forEach(user => {
+      userMap[user.id] = user;
+    });
+    setUsers(userMap);
+    setHasPermissions(true);
+  })
     .catch(err => {
       console.error('Error loading users:', err);
       if (err.response && err.response.status === 403) {
