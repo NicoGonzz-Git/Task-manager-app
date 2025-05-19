@@ -4,7 +4,6 @@ import taskService from '../../services/taskService';
 export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, thunkAPI) => {
   try {
     const response = await taskService.getTasks();
-    console.log(response)
     
     return response.data.data.map(task => {
       return {
@@ -52,8 +51,7 @@ export const updateTaskAsync = createAsyncThunk(
   'tasks/updateTask',
   async ({ id, data }, thunkAPI) => {
     try {
-      const response = await taskService.updateTask(id, data);
-      console.log(response)
+      await taskService.updateTask(id, data);
       return {
         id,
         ...data

@@ -128,7 +128,6 @@ const TaskForm = ({ initialTask = null, selectedDate = new Date(), onClose }) =>
         role: task.role || 'user',
         priority: task.color
       };
-      console.log(taskToSave)
       
      if (task.id) {
       dispatch(updateTaskAsync({ id: task.id, data: taskToSave }))

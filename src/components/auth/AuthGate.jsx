@@ -19,7 +19,6 @@ const AuthGate = ({ children }) => {
             account: allAccounts[0],
           });
           
-          console.log("Token adquirido:", result);
           localStorage.setItem("accessToken", result.accessToken);
           setIsAuthenticated(true);
         } catch (error) {
